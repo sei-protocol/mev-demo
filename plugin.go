@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,6 +23,16 @@ func (h *Handler) Handle(ctx sdk.Context, req *abci.RequestPrepareProposal) (*ab
 	return &abci.ResponsePrepareProposal{
 		TxRecords: txRecords,
 	}, nil
+}
+
+func (h *Handler) RPCSubmission(ctx context.Context, req json.RawMessage) (res json.RawMessage, err error) {
+	mapReq := map[string]interface{}{}
+	if err := json.Unmarshal(req, &mapReq); err != nil {
+		return nil, err
+	}
+	fmt.Printf("MEV RPC submission received %s\n", mapReq)
+	mapRes := map[string]interface{}{"success": true}
+	return json.Marshal(mapRes)
 }
 
 var HandlerInstance = Handler{}
